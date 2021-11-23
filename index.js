@@ -120,6 +120,51 @@ app.post('/postQuestion', async (req,res)=>{
   res.send(result);
 })
 
+// ----------- Get Single question from db --------------
+app.get('/question/:id', async (req,res)=>{
+  const {id} = req.params;
+  console.log("question search id is ", id);
+  const filter = { _id: ObjectId(id) };
+  const result = Questions.findOne(filter);
+  const question = await result;
+  res.send(question);
+})
+
+
+
+// ------ Updating Single Question to db ------
+app.put('/updateQuestion/:id' ,async (req,res)=>{
+  const { id } = req.params;
+  console.log(" Question update request id is : ", id);
+  const data =  req.body;
+  console.log("Question update request status is : ", data);
+  const filter = { _id: ObjectId(id) };
+  const options = { upsert: true };
+  const updateDoc = {$set:
+     {
+        question: data.question,
+        opt1: data.opt1,
+        opt2: data.opt2,
+        opt3: data.opt3,
+        opt4 : data.opt4,
+        correctAns : data.correctAns
+    }, };
+  console.log("updated Question is : ", updateDoc);
+  const result = await Questions.updateOne(filter,updateDoc,options);
+  console.log("final update Question result is : ", result);
+  res.send(result);
+})
+
+// ------------ Delete Single Question ---------------
+
+app.delete('/deleteQuestion/:id',async (req,res)=>{
+  const {id} = req.params;
+  console.log("Delete Question by id hitted",id);
+  const query = { _id: ObjectId(id) };
+   const result = await  Questions.deleteOne(query);
+   console.log("Deleted Question for Reviews",result);
+   res.json(result);
+})
 
 
 // -------- Get All Question ---------
